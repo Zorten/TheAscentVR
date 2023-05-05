@@ -47,6 +47,10 @@ internal static class OVRSpaceQuery
         /// </summary>
         Storable = 1 << OVRPlugin.SpaceComponentType.Storable,
 
+        /// <summary>
+        /// The space is sharable.
+        /// </summary>
+        Sharable = 1 << OVRPlugin.SpaceComponentType.Sharable,
 
         /// <summary>
         /// The space represents a 2D plane.
@@ -119,7 +123,7 @@ internal static class OVRSpaceQuery
 
         private ComponentType _componentFilter;
 
-        private IReadOnlyList<Guid> _uuidFilter;
+        private IEnumerable<Guid> _uuidFilter;
 
         /// <summary>
         /// The components which must be present on the space in order to match the query.
@@ -168,7 +172,7 @@ internal static class OVRSpaceQuery
         /// <see cref="ComponentType.None"/>.</exception>
         /// <exception cref="ArgumentException">Thrown if <see cref="UuidFilter"/> is set to a value that contains more
         /// than <seealso cref="MaxUuidCount"/> UUIDs.</exception>
-        public IReadOnlyList<Guid> UuidFilter
+        public IEnumerable<Guid> UuidFilter
         {
             get => _uuidFilter;
             set
@@ -176,8 +180,8 @@ internal static class OVRSpaceQuery
                 if (value != null && _componentFilter != 0)
                     throw new InvalidOperationException($"{nameof(ComponentFilter)} must be {nameof(ComponentType.None)} to query by UUID.");
 
-                if (value?.Count > MaxUuidCount)
-                    throw new ArgumentException($"There must not be more than {MaxUuidCount} UUIDs specified by the {nameof(UuidFilter)} (new value contains {value.Count} UUIDs).", nameof(value));
+                if (value is IReadOnlyCollection<Guid> collection && collection.Count > MaxUuidCount)
+                    throw new ArgumentException($"There must not be more than {MaxUuidCount} UUIDs specified by the {nameof(UuidFilter)} (new value contains {collection.Count} UUIDs).", nameof(value));
 
                 _uuidFilter = value;
             }
@@ -212,10 +216,13 @@ internal static class OVRSpaceQuery
             if (_uuidFilter != null)
             {
                 filterType = OVRPlugin.SpaceQueryFilterType.Ids;
-                numIds = Math.Min(_uuidFilter.Count, MaxUuidCount);
-                for (var i = 0; i < numIds; i++)
+                foreach (var id in _uuidFilter.ToNonAlloc())
                 {
-                    Ids[i] = _uuidFilter[i];
+                    if (numIds >= MaxUuidCount)
+                        throw new InvalidOperationException(
+                            $"{nameof(UuidFilter)} must not contain more than {MaxUuidCount} UUIDs.");
+
+                    Ids[numIds++] = id;
                 }
             }
             else if (_componentFilter != 0)
@@ -225,6 +232,8 @@ internal static class OVRSpaceQuery
                     ComponentTypes[numComponents++] = OVRPlugin.SpaceComponentType.Locatable;
                 if ((_componentFilter & ComponentType.Storable) != 0)
                     ComponentTypes[numComponents++] = OVRPlugin.SpaceComponentType.Storable;
+                if ((_componentFilter & ComponentType.Sharable) != 0)
+                    ComponentTypes[numComponents++] = OVRPlugin.SpaceComponentType.Sharable;
                 if ((_componentFilter & ComponentType.Bounded2D) != 0)
                     ComponentTypes[numComponents++] = OVRPlugin.SpaceComponentType.Bounded2D;
                 if ((_componentFilter & ComponentType.Bounded3D) != 0)

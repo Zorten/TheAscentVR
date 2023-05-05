@@ -24,7 +24,7 @@ public class EndGame : MonoBehaviour
     private bool buttonA;
     private bool buttonX;
     private bool allKeys;
-    private bool keyFlag = true;
+  //  private bool keyFlag = true;
 
 
     void Start()
@@ -51,11 +51,9 @@ public class EndGame : MonoBehaviour
             RenderSettings.skybox = Night;
             RenderSettings.customReflection = NightCube;
 
-            // Reactivate keysS
-            int i = 0;
+            // Reactivate keys
             foreach (GameObject key in Keys){
                 key.SetActive(true);
-                i++;
             }
 
             //Turn maze lights off again
@@ -65,12 +63,12 @@ public class EndGame : MonoBehaviour
 
             // Update variables and text display
             GameManager.keysCollected = 0;
-            GameManager.keyCount.text = "Keys: 0/" + GameManager.keysToWin.ToString();
             GameManager.gameOver = false;
-            keyFlag = true;
+           // keyFlag = true;
             Flashlight.GetComponent<FlashlightToggle>().isOn = false;
         }
 
+        /*
         //For testing purposes. Teleports user to end of game.
         buttonX = OVRInput.GetDown(OVRInput.Button.Three);
         if (buttonX)
@@ -79,22 +77,25 @@ public class EndGame : MonoBehaviour
             player.transform.position = new Vector3(-13, 2, -46);
             player.GetComponent<CharacterController>().enabled = true;
         }
+        */
 
         //See if player collected all keys needed, if so deactivate the rest
+        //FIX ME 
         allKeys = GameManager.gameOver;
-        if (allKeys && keyFlag){
+        if (allKeys){ // && keyFlag){
             foreach (GameObject key in Keys){
                 key.SetActive(false);
             }
 
             //Play sound of door opening
             source.Play();
-            keyFlag = false;
+           // keyFlag = false;
         }
     }
     
     //When player collides with gate, check if all keys have been collected
     //If player has all keys, light up maze and show endgame text. Otherwise ....
+    //FIX ME
     void OnTriggerEnter(Collider player)
     {
         allKeys = GameManager.gameOver;

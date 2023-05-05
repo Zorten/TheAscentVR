@@ -14,11 +14,6 @@ public class GameManager : MonoBehaviour
     //private AudioSource source;
 
     //Original player postion: (-24, 1.5, 95)
-    // Start is called before the first frame update
-    void Start()
-    {
-        keyCount.text = "Keys: 0/" + keysToWin;
-    }
 
     // Update is called once per frame
     void Update()
@@ -34,19 +29,17 @@ public class GameManager : MonoBehaviour
             #endif
         }
 
+        keyCount.text = "Keys: " + keysCollected.ToString() + "/" + keysToWin.ToString();
+
     }
 
     public void incKeysCollected () {
         if (keysCollected == keysToWin){
-            return;
+            gameOver = true;
         }
-
-        keysCollected++;
-        keyCount.text = "Keys: " + keysCollected.ToString() + "/" + keysToWin.ToString();
-
-        if(keysCollected >= keysToWin) {
-           Debug.Log("Gate Unlocked"); 
-           gameOver = true;
+        else
+        {
+            keysCollected++;
         }
     }
 

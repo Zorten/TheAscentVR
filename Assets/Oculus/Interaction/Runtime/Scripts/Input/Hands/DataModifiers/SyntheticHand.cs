@@ -364,7 +364,8 @@ namespace Oculus.Interaction.Input
         /// <param name="skipAnimation">Whether to skip the animation curve for this override.</param>
         public void LockWristPose(Pose wristPose, float overrideFactor = 1f, WristLockMode lockMode = WristLockMode.Full, bool worldPose = false, bool skipAnimation = false)
         {
-            Pose desiredWristPose = (worldPose && TrackingToWorldTransformer != null ) ? TrackingToWorldTransformer.ToTrackingPose(wristPose) : wristPose;
+            Pose desiredWristPose = (worldPose && TrackingToWorldTransformer != null ) ?
+                TrackingToWorldTransformer.ToTrackingPose(wristPose): wristPose;
 
             if ((lockMode & WristLockMode.Position) != 0)
             {
@@ -472,13 +473,12 @@ namespace Oculus.Interaction.Input
 
         public void InjectAllSyntheticHandModifier(UpdateModeFlags updateMode, IDataSource updateAfter,
             DataModifier<HandDataAsset> modifyDataFromSource, bool applyModifier,
-            Component[] aspects,
             ProgressCurve wristPositionLockCurve, ProgressCurve wristPositionUnlockCurve,
             ProgressCurve wristRotationLockCurve, ProgressCurve wristRotationUnlockCurve,
             ProgressCurve jointLockCurve, ProgressCurve jointUnlockCurve,
             float spreadAllowance)
         {
-            base.InjectAllHand(updateMode, updateAfter, modifyDataFromSource, applyModifier, aspects);
+            base.InjectAllHand(updateMode, updateAfter, modifyDataFromSource, applyModifier);
 
             InjectWristPositionLockCurve(wristPositionLockCurve);
             InjectWristPositionUnlockCurve(wristPositionUnlockCurve);

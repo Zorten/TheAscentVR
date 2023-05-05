@@ -6,11 +6,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-using Facebook.WitAi.Configuration;
-using Facebook.WitAi.Interfaces;
+using Meta.WitAi.Configuration;
+using Meta.WitAi.Interfaces;
 using UnityEngine;
 
-namespace Facebook.WitAi
+namespace Meta.WitAi
 {
     public class Wit : VoiceService, IWitRuntimeConfigProvider
     {
@@ -39,19 +39,14 @@ namespace Facebook.WitAi
 
         #region Voice Service Methods
 
-        public override void Activate()
+        public override void Activate(string text, WitRequestOptions requestOptions)
         {
-            witService.Activate();
+            witService.Activate(text, requestOptions);
         }
 
         public override void Activate(WitRequestOptions options)
         {
             witService.Activate(options);
-        }
-
-        public override void ActivateImmediately()
-        {
-            witService.ActivateImmediately();
         }
 
         public override void ActivateImmediately(WitRequestOptions options)
@@ -69,16 +64,6 @@ namespace Facebook.WitAi
             witService.DeactivateAndAbortRequest();
         }
 
-        public override void Activate(string text)
-        {
-            witService.Activate(text);
-        }
-
-        public override void Activate(string text, WitRequestOptions requestOptions)
-        {
-            witService.Activate(text, requestOptions);
-        }
-
         #endregion
 
         protected override void Awake()
@@ -90,6 +75,7 @@ namespace Facebook.WitAi
             // that this component has its own dedicated WitService
             witService = gameObject.AddComponent<WitService>();
             witService.VoiceEventProvider = this;
+            witService.TelemetryEventsProvider = this;
             witService.ConfigurationProvider = this;
         }
     }

@@ -21,7 +21,7 @@ namespace Oculus.Interaction.InterfaceSupport
         private class MonoInspector
         {
             public readonly MonoBehaviour Mono;
-            public readonly Editor editor;
+            public readonly Editor Editor;
 
             public MonoInspector(MonoBehaviour mono)
             {

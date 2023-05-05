@@ -33,9 +33,13 @@ namespace Oculus.Interaction
     public class InteractableGroupView : MonoBehaviour, IInteractableView
     {
         [SerializeField, Interface(typeof(IInteractable))]
-        private List<MonoBehaviour> _interactables;
+        private List<UnityEngine.Object> _interactables;
 
         private List<IInteractable> Interactables;
+
+        [SerializeField, Optional]
+        private UnityEngine.Object _data = null;
+        public object Data { get; protected set; } = null;
 
         public int InteractorsCount
         {
@@ -118,7 +122,9 @@ namespace Oculus.Interaction
                 if (_state == value) return;
                 InteractableState previousState = _state;
                 _state = value;
-                WhenStateChanged(new InteractableStateChangeArgs { PreviousState = previousState, NewState = _state });
+                WhenStateChanged(new InteractableStateChangeArgs(
+                    previousState,_state
+                ));
             }
         }
 
@@ -147,10 +153,14 @@ namespace Oculus.Interaction
         protected virtual void Start()
         {
             this.BeginStart(ref _started);
-            foreach (IInteractable interactable in Interactables)
+            this.AssertCollectionItems(Interactables, nameof(Interactables));
+
+            if (Data == null)
             {
-                Assert.IsNotNull(interactable);
+                _data = this;
+                Data = _data;
             }
+
             this.EndStart(ref _started);
         }
 
@@ -201,8 +211,16 @@ namespace Oculus.Interaction
         {
             Interactables = interactables;
             _interactables =
-                Interactables.ConvertAll(interactable => interactable as MonoBehaviour);
+                Interactables.ConvertAll(interactable => interactable as UnityEngine.Object);
         }
+
+        public void InjectOptionalData(object data)
+        {
+            _data = data as UnityEngine.Object;
+            Data = data;
+        }
+
+
         #endregion
     }
 }

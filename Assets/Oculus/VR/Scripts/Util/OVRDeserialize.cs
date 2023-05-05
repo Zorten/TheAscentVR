@@ -22,6 +22,7 @@ using System;
 using System.Runtime.InteropServices;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
+using static OVRPlugin;
 
 //-------------------------------------------------------------------------------------
 /// <summary>
@@ -68,6 +69,7 @@ internal static class OVRDeserialize
     }
 
 
+
     public struct SpatialAnchorCreateCompleteData
     {
         public UInt64 RequestId;
@@ -100,6 +102,20 @@ internal static class OVRDeserialize
         public int Result;
         public Guid Uuid;
         public OVRPlugin.SpaceStorageLocation Location;
+    }
+
+    public struct SpaceShareResultData
+    {
+        public UInt64 RequestId;
+
+        public int Result;
+    }
+
+    public struct SpaceListSaveResultData
+    {
+        public UInt64 RequestId;
+
+        public int Result;
     }
 
 }

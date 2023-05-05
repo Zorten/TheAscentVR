@@ -9,34 +9,58 @@
 using System;
 using System.Collections.Generic;
 using Meta.Conduit;
-using Facebook.WitAi.Configuration;
-using Facebook.WitAi.Data;
-using Facebook.WitAi.Data.Configuration;
-using Facebook.WitAi.Data.Intents;
-using Facebook.WitAi.Events;
-using Facebook.WitAi.Events.UnityEventListeners;
-using Facebook.WitAi.Interfaces;
-using Facebook.WitAi.Lib;
+using Meta.WitAi.Configuration;
+using Meta.WitAi.Data;
+using Meta.WitAi.Data.Configuration;
+using Meta.WitAi.Data.Intents;
+using Meta.WitAi.Events;
+using Meta.WitAi.Events.UnityEventListeners;
+using Meta.WitAi.Interfaces;
+using Meta.WitAi.Json;
 using UnityEngine;
 
-namespace Facebook.WitAi
+namespace Meta.WitAi
 {
     public abstract class VoiceService : MonoBehaviour, IVoiceService, IInstanceResolver, IAudioEventProvider
     {
         /// <summary>
         /// When set to true, Conduit will be used. Otherwise, the legacy dispatching will be used.
         /// </summary>
-        private bool UseConduit => _witConfiguration && _witConfiguration.useConduit;
+        private bool UseConduit => WitConfiguration && WitConfiguration.useConduit;
 
         /// <summary>
-        /// The wit configuration.
+        /// Wit configuration accessor via IWitConfigurationProvider
         /// </summary>
+        public WitConfiguration WitConfiguration
+        {
+            get
+            {
+                if (_witConfiguration == null)
+                {
+                    _witConfiguration = GetComponent<IWitConfigurationProvider>()?.Configuration;
+                }
+                return _witConfiguration;
+            }
+        }
         private WitConfiguration _witConfiguration;
 
-        private readonly IParameterProvider conduitParameterProvider = new WitConduitParameterProvider();
+        /// <summary>
+        /// The Conduit parameter provider.
+        /// </summary>
+        private readonly IParameterProvider _conduitParameterProvider = new ParameterProvider();
 
+        /// <summary>
+        /// This field should not be accessed outside the Wit-Unity library. If you need access
+        /// to events you should be using the VoiceService.VoiceEvents property instead.
+        /// </summary>
         [Tooltip("Events that will fire before, during and after an activation")] [SerializeField]
-        public VoiceEvents events = new VoiceEvents();
+        protected VoiceEvents events = new VoiceEvents();
+
+        ///<summary>
+        /// Internal events used to report telemetry. These events are reserved for internal
+        /// use only and should not be used for any other purpose.
+        /// </summary>
+        protected TelemetryEvents telemetryEvents = new TelemetryEvents();
 
         /// <summary>
         /// Returns true if this voice service is currently active and listening with the mic
@@ -70,6 +94,12 @@ namespace Facebook.WitAi
             set => events = value;
         }
 
+        public virtual TelemetryEvents TelemetryEvents
+        {
+            get => telemetryEvents;
+            set => telemetryEvents = value;
+        }
+
         /// <summary>
         /// A subset of events around collection of audio data
         /// </summary>
@@ -90,14 +120,29 @@ namespace Facebook.WitAi
         /// </summary>
         protected VoiceService()
         {
-            var conduitDispatcherFactory = new ConduitDispatcherFactory(this, this.conduitParameterProvider);
+            _conduitParameterProvider.SetSpecializedParameter(ParameterProvider.WitResponseNodeReservedName, typeof(WitResponseNode));
+            _conduitParameterProvider.SetSpecializedParameter(ParameterProvider.VoiceSessionReservedName, typeof(VoiceSession));
+            var conduitDispatcherFactory = new ConduitDispatcherFactory(this);
             ConduitDispatcher = conduitDispatcherFactory.GetDispatcher();
         }
 
         /// <summary>
+        /// Send text data for NLU processing. Results will return the same way a voice based activation would.
+        /// </summary>
+        /// <param name="text"></param>
+        public void Activate(string text) => Activate(text, new WitRequestOptions());
+
+        /// <summary>
+        /// Send text data for NLU processing with custom request options.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="requestOptions"></param>
+        public abstract void Activate(string text, WitRequestOptions requestOptions);
+
+        /// <summary>
         /// Start listening for sound or speech from the user and start sending data to Wit.ai once sound or speech has been detected.
         /// </summary>
-        public abstract void Activate();
+        public void Activate() => Activate(new WitRequestOptions());
 
         /// <summary>
         /// Activate the microphone and send data for NLU processing. Includes optional additional request parameters like dynamic entities and maximum results.
@@ -108,7 +153,7 @@ namespace Facebook.WitAi
         /// <summary>
         /// Activate the microphone and send data for NLU processing immediately without waiting for sound/speech from the user to begin.
         /// </summary>
-        public abstract void ActivateImmediately();
+        public void ActivateImmediately() => ActivateImmediately(new WitRequestOptions());
 
         /// <summary>
         /// Activate the microphone and send data for NLU processing immediately without waiting for sound/speech from the user to begin.  Includes optional additional request parameters like dynamic entities and maximum results.
@@ -126,19 +171,6 @@ namespace Facebook.WitAi
         public abstract void DeactivateAndAbortRequest();
 
         /// <summary>
-        /// Send text data for NLU processing. Results will return the same way a voice based activation would.
-        /// </summary>
-        /// <param name="text"></param>
-        public abstract void Activate(string text);
-
-        /// <summary>
-        /// Send text data for NLU processing with custom request options.
-        /// </summary>
-        /// <param name="text"></param>
-        /// <param name="requestOptions"></param>
-        public abstract void Activate(string text, WitRequestOptions requestOptions);
-
-        /// <summary>
         /// Returns objects of the specified type.
         /// </summary>
         /// <param name="type">The type.</param>
@@ -150,9 +182,6 @@ namespace Facebook.WitAi
 
         protected virtual void Awake()
         {
-            var witConfigProvider = this.GetComponent<IWitRuntimeConfigProvider>();
-            _witConfiguration = witConfigProvider.RuntimeConfiguration.witConfiguration;
-
             InitializeEventListeners();
 
             if (!UseConduit)
@@ -180,7 +209,19 @@ namespace Facebook.WitAi
         {
             if (UseConduit)
             {
-                ConduitDispatcher.Initialize(_witConfiguration.manifestLocalPath);
+                ConduitDispatcher.Initialize(_witConfiguration.ManifestLocalPath);
+                if (_witConfiguration.relaxedResolution)
+                {
+                    if (!ConduitDispatcher.Manifest.ResolveEntities())
+                    {
+                        VLog.E("Failed to resolve Conduit entities");
+                    }
+
+                    foreach (var entity in ConduitDispatcher.Manifest.CustomEntityTypes)
+                    {
+                        _conduitParameterProvider.AddCustomType(entity.Key, entity.Value);
+                    }
+                }
             }
             VoiceEvents.OnPartialResponse.AddListener(ValidateShortResponse);
             VoiceEvents.OnResponse.AddListener(HandleResponse);
@@ -192,15 +233,22 @@ namespace Facebook.WitAi
             VoiceEvents.OnResponse.RemoveListener(HandleResponse);
         }
 
+        private VoiceSession GetVoiceSession(WitResponseNode response)
+        {
+            return new VoiceSession
+            {
+                service = this,
+                response = response,
+                validResponse = false
+            };
+        }
+
         protected virtual void ValidateShortResponse(WitResponseNode response)
         {
             if (VoiceEvents.OnValidatePartialResponse != null)
             {
                 // Create short response data
-                VoiceSession validationData = new VoiceSession();
-                validationData.service = this;
-                validationData.response = response;
-                validationData.validResponse = false;
+                VoiceSession validationData = GetVoiceSession(response);
 
                 // Call short response
                 VoiceEvents.OnValidatePartialResponse.Invoke(validationData);
@@ -212,9 +260,11 @@ namespace Facebook.WitAi
                     WitIntentData intent = response.GetFirstIntentData();
                     if (intent != null)
                     {
-                        Dictionary<string, object> parameters = GetConduitResponseParameters(response);
-                        parameters[WitConduitParameterProvider.VoiceSessionReservedName] = validationData;
-                        ConduitDispatcher.InvokeAction(intent.name, parameters, intent.confidence, true);
+                        _conduitParameterProvider.PopulateParametersFromNode(response);
+                        _conduitParameterProvider.AddParameter(ParameterProvider.VoiceSessionReservedName,
+                            validationData);
+                        _conduitParameterProvider.AddParameter(ParameterProvider.WitResponseNodeReservedName, response);
+                        ConduitDispatcher.InvokeAction(_conduitParameterProvider, intent.name, _witConfiguration.relaxedResolution, intent.confidence, true);
                     }
                 }
 
@@ -248,7 +298,10 @@ namespace Facebook.WitAi
         {
             if (UseConduit)
             {
-                ConduitDispatcher.InvokeAction(intent.name, GetConduitResponseParameters(response), intent.confidence, false);
+                _conduitParameterProvider.PopulateParametersFromNode(response);
+                _conduitParameterProvider.AddParameter(ParameterProvider.WitResponseNodeReservedName, response);
+                ConduitDispatcher.InvokeAction(_conduitParameterProvider, intent.name,
+                    _witConfiguration.relaxedResolution, intent.confidence, false);
             }
             else
             {
@@ -260,19 +313,7 @@ namespace Facebook.WitAi
             }
         }
 
-        // Handle conduit response parameters
-        private Dictionary<string, object> GetConduitResponseParameters(WitResponseNode response)
-        {
-            var parameters = new Dictionary<string, object>();
-            foreach (var entity in response.AsObject["entities"].Childs)
-            {
-                var parameterName = entity[0]["role"].Value;
-                var parameterValue = entity[0]["value"].Value;
-                parameters.Add(parameterName, parameterValue);
-            }
-            parameters.Add(WitConduitParameterProvider.WitResponseNodeReservedName, response);
-            return parameters;
-        }
+
 
         private void ExecuteRegisteredMatch(RegisteredMatchIntent registeredMethod,
             WitIntentData intent, WitResponseNode response)
@@ -290,7 +331,7 @@ namespace Facebook.WitAi
                     }
                     if (parameters[0].ParameterType != typeof(WitResponseNode) || parameters.Length > 2)
                     {
-                        Debug.LogError("Match intent only supports methods with no parameters or with a WitResponseNode parameter. Enable Conduit or adjust the parameters");
+                        VLog.E("Match intent only supports methods with no parameters or with a WitResponseNode parameter. Enable Conduit or adjust the parameters");
                         continue;
                     }
                     if (parameters.Length == 1)
@@ -302,7 +343,7 @@ namespace Facebook.WitAi
         }
     }
 
-    public interface IVoiceService : IVoiceEventProvider
+    public interface IVoiceService : IVoiceEventProvider, ITelemetryEventsProvider
     {
         /// <summary>
         /// Returns true if this voice service is currently active and listening with the mic
@@ -315,20 +356,27 @@ namespace Facebook.WitAi
 
         new VoiceEvents VoiceEvents { get; set; }
 
+        new TelemetryEvents TelemetryEvents { get; set; }
+
         ITranscriptionProvider TranscriptionProvider { get; set; }
 
         /// <summary>
-        /// Activate the microphone and send data for NLU processing.
+        /// Send text data for NLU processing with custom request options.
         /// </summary>
-        void Activate();
+        /// <param name="text"></param>
+        /// <param name="requestOptions">Custom request options</param>
+        void Activate(string text, WitRequestOptions requestOptions);
+
+        /// <summary>
+        /// Activate the microphone and wait for threshold and then send data
+        /// </summary>
+        /// <param name="requestOptions">Custom request options</param>
+        void Activate(WitRequestOptions requestOptions);
 
         /// <summary>
         /// Activate the microphone and send data for NLU processing with custom request options.
         /// </summary>
-        /// <param name="requestOptions"></param>
-        void Activate(WitRequestOptions requestOptions);
-
-        void ActivateImmediately();
+        /// <param name="requestOptions">Custom request options</param>
         void ActivateImmediately(WitRequestOptions requestOptions);
 
         /// <summary>
@@ -340,18 +388,5 @@ namespace Facebook.WitAi
         /// Stop listening and abort any requests that may be active without waiting for a response.
         /// </summary>
         void DeactivateAndAbortRequest();
-
-        /// <summary>
-        /// Send text data for NLU processing
-        /// </summary>
-        /// <param name="text"></param>
-        void Activate(string transcription);
-
-        /// <summary>
-        /// Send text data for NLU processing with custom request options.
-        /// </summary>
-        /// <param name="text"></param>
-        /// <param name="requestOptions"></param>
-        void Activate(string text, WitRequestOptions requestOptions);
     }
 }

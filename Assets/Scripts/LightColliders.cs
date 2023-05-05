@@ -13,7 +13,6 @@ public class LightColliders : MonoBehaviour
     }
 
 
-    // COLLIDERS ARE SOLID AND BLOCK YOU. FIX ME!!
     void OnTriggerEnter(Collider player)
     {
         //turn on light once collider entered
