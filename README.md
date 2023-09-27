@@ -1,4 +1,5 @@
 # The Ascent VR
+##### Authors: Zergio Ruvalcaba, Salvador Sanchez, Rishab Dudhia
 
 ## Introduction
   _The Ascent_ is a virtual reality horror video game. At the start of the game, the player is dropped at the beginning of a dark maze in front of a wall with instructions to complete the game. A flashlight is connected to the player’s hand and they must turn it on to help them see their surroundings and navigate his or her escape. Throughout the maze, there are point lights that are initially turned off to force the user to explore the maze, and once a light is passed, it is turned on to let the player know that they have been there before. The lights also have a color scheme of blue to white to red with blue representing moving away from the start of the maze to red representing the player nearing the end. While traversing the maze, the player must also collect 3 out of the 6 glowing keys placed randomly throughout the maze to unlock the exit gate. If the exit is reached before collecting 3 keys, the door will stay locked and the player is still stuck inside until they acquire 3 keys. 
@@ -52,24 +53,67 @@ When the player reaches the exit gate after having collected all the keys, the e
 
 The game uses a few scripts and functions to manage the lighting (World light, wall lights, and flashlight), objects (player, keys, and text), audio, and game status (restart, endgame, and quit).
 
-### Scripts 
+## Scripts 
 
 - **GameManager:** In the start function of the game manager script, it initializes the text on the player’s hand to show that they have collected 0 keys out of 3 (or however many are needed to open the gate).
 	- The _Update_ function continuously checks to see if the player has pressed any of the keys to close the game. If so, it closes the game.
  	- The _incKeysCollected_ function is a public function that increments the number of keys collected, updates the keys collected text, and when enough keys are collected sets a flag to true.
  
-  - **EndGame:** The script is attached to the exit gate and is mainly used to handle restarts and endgame scenarios.
+- **EndGame:** The script is attached to the exit gate and is mainly used to handle restarts and endgame scenarios.
 	- The _Start_ function gets the audio source for the gate opening as well as ensuring the winning message is not visible. 
 	- The _Update_ function checks to see if the player has collected enough keys or if the restart button has been pressed. If enough keys have been collected, it removes the extra keys from the maze and plays the audio of the gate opening. If the restart button has been pressed, it moves the player back to the start position, ensures that the maze is dark, resets the keys in the maze, turns off the wall lights, and updates the keys collected and the keys collected text to 0.
 	- Since the script is attached to the gate the _OnTriggerEnter_ function runs when the player collides with the gate. If the player has enough keys, it once again plays the gate opening audio, lights up the maze, and shows the endgame text.
  
-  - **KeyManager:** The script is attached to each key object. It has only one function, _OnTriggerEnter_, which runs when the player collides with a key, increments the keys collected, and removes that key object from the maze.
+ - **KeyManager:** The script is attached to each key object. It has only one function, _OnTriggerEnter_, which runs when the player collides with a key, increments the keys collected, and removes that key object from the maze.
  
-  - **LightColliders:** This script is attached to each wall light object. In its start function, it makes sure that each wall light is off. 
+- **LightColliders:** This script is attached to each wall light object. In its start function, it makes sure that each wall light is off. 
 	- In the _OnTriggerEnter_ function, when a player “collides” (enters its box collider) it turns on the wall light.
  
-  - **FlashlightToggle:** This script is attached to the flashlight object the player is holding. The _Start_ function initializes the flashlight to be off and gets an audio source.
+- **FlashlightToggle:** This script is attached to the flashlight object the player is holding. The _Start_ function initializes the flashlight to be off and gets an audio source.
 	- The _Update_ function checks to see if the flashlight toggle button has been pressed. If so, it plays the click audio clip and toggles the flashlight to on or off. If it is the first time that it is being pressed, it plays the whisper audio clip.
 
- 
+## Open-Source Code/Assets Used 
 
+#### Existing open source code
+
+- **OVR plugin:** This was used in the same manner as previous labs.
+
+- **FlashlightToggle:** Came with the Rusty Flashlight asset, to help implement a toggle on and off for the flashlight model. However, we did slightly modify it to be able to work the way we intend it to.
+
+
+#### Free Assets
+ 
+- MDP 4K Texture Pack Vol.1 by Adventure Forge
+	- Used the textures in this pack for the maze walls, the floor, and the ceiling.
+- Rusty Flashlight by Brittany Bolick 
+	- Used as the model for the player’s flashlight.
+- Dwarven Expedition Pack - Stylized Assets by Tobyfredson
+	- Used the DungeonGate model as the exit gate for the maze.
+- Rust Key by Aleksn09
+	- Used as the model for the keys to open the gate.
+- Help Me by GGBotNet
+	- Used as the font for all of the text in the maze.
+- Horror Ambient by mr45
+	- Used as the ambiance music throughout the game.
+- Flashlight Switch by Kinoton
+	- Used for the flashlight toggle audio.
+- Creaking Wood by Breviceps
+	- Used for the gate opening audio, when all keys are collected and the exit is reached.
+- come back alive whisper by LadyImperatrix
+	- Used for the first time the flashlight is toggled on.
+ 
+## Lessons Learned
+
+One of the most time-consuming aspects of this project was creating the maze. We tried finding assets or a tool that would help us create the 3D maze, but we ended up building it up ourselves in Unity, using purely 3D cube objects. Although tedious, this allowed us to construct the maze however we wanted, which was helpful later on as we ended up reducing its size and changing the layout. 
+
+
+Another problem we ran into was making it so the maze would be completely dark. Initially, we simply changed the skybox into a solid dark color. This worked at the beginning, however at the end of the game when the maze is supposed to light up, when we turned the skybox into a light color, only the outside of the maze we constructed would light up, meaning everything but the area we wanted to illuminate would light up. We fixed this by using a dark cubemap on top of the dark skybox, and when we wanted to light up the world we changed the rendering to use a light skybox and light cubemap.
+
+
+Another substantial problem we ran into was actually finishing the game. Even as we played it, we would get constantly lost and found it extremely difficult to find the exit without help. Because of this, we cut the size of the maze almost by half, and streamlined the paths the user could take a bit more. This improved the difficulty of the game, however it would still take a while to find the exit and it could be a bit boring since you were just walking around. To remediate this, we added the keys to the game as a necessary collectible. This made it so the player had a goal besides just walking around and finding an exit, which made the game way more engaging. This made the game more enjoyable, yet it was still easy to get lost. To fix this problem, we decided to add the “hot and cold” colored light system, in order to help guide the player towards the exit. This made the game actually playable within a reasonable amount of time, and also more aesthetically appealing since the colored lights added a nice glow to the dark maze.
+
+
+Users of the game found it quite interesting and immersive as they were scared about jump scares that could potentially pop out of the darkness. Even though we did include any, that would have been a nice addition to our game. During our testing stage we did get reviews from other users that the maze was difficult to navigate before we added the light system as a way to track what areas of the maze had been explored. After the light system was added, there were much better responses as the time taken to finish the maze dropped significantly and users stopped losing interest in the game. One last improvement suggested during our demo was that it would have been cool if there was a timer or a monster chasing the user making them feel even more pressured to finish the maze. 
+	
+ 
+For distributing the workload, we each sat together at the lab computer on lab days and some Fridays when lab office-hours were held. One person would be at the keyboard and mouse controlling what we wanted to do in Unity, while we all talked through problems and possible solutions. There were not many times when someone had to shoulder work by themselves and even if one of us could not be present in person we would get on a zoom call to confer about problems we were having. Therefore, there is not one thing that one person did, however it was more like all three of us did everything from scripting to creating the layout of the maze as we talked in real time about decisions to be made. After deciding, we implemented and tested with one person wearing the VR headset and entering the game while the two others troubleshot from the console output and seeing the world view and tracking the player inside of the game for any adjustments that needed to be made.
