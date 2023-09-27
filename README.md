@@ -16,18 +16,22 @@ The game begins with you on one end of the maze, and with some instructions writ
 The flashlight can be toggled on and off, and each time a clicking sound plays. The first time the player turns on the flashlight, the whisper mentioned in the Introduction is triggered. 
 As soon as the game starts, the player is able to inspect their left hand, which has information about how many keys the player has collected in order to escape. The count is updated as the player traverses the game and picks up more keys. If the player restarts the game, the key count is obviously reset as well.
 
-Figure 2: In-game key-count displayed on player’s left hand
+#### Figure 2: In-game key-count displayed on player’s left hand
+![fig2](Images/Fig2.png)
 
 The keys around the maze have a green light attached to them in order to make them easier to notice, and to grab the player’s attention. 
 
-Figure 3: Key object, with green light to highlight its presence
+#### Figure 3: Key object, with green light to highlight its presence
+![fig3](Images/Fig3.png)
 
 As the player traverses the game, lights will illuminate places you’ve passed through. As the player gets closer to the exit, the lights will begin to turn red, otherwise they begin to turn blue. This “hot and cold” system is supposed to help guide the player towards the exit.
 
-Figure 4: Lights illuminating maze gradually turning red as you near the exit
+#### Figure 4: Lights illuminating maze gradually turning red as you near the exit
+![fig4](Images/Fig4.png)
 When the player reaches the exit gate after having collected all the keys, the entire maze will light up, and a message is displayed to the player that they beat the game.
 
-Figure 5: Exit gate and celebratory end-game message
+#### Figure 5: Exit gate and celebratory end-game message
+![fig5](Images/Fig5.png)
 
   For our game, _The Ascent_, we chose the user interface to be the Oculus Touch controllers. We decided on this because it was the most intuitive, as well as the most immersive, option for our game. The Touch controllers allowed us to map the flashlight to the player’s right hand, which let the player point it in whichever direction they desired. In addition, the trigger and the weight of the controller simulated holding and clicking a flashlight pretty well, increasing player immersion in the game world. If we had used a keyboard and/or mouse, the player would be more aware of those objects, since they are not as intuitive and they don’t allow a free range of motion like the Touch controllers.
   To control player movement, we used the joystick on the left Touch controller. By moving the joystick, the player can control and move the character in the 3D space. The right joystick was used to shift the player’s view so they wouldn’t have to physically turn around when traversing the game. When the player slides the right joystick to either side (left or right), the player’s camera view will rotate about 30 degrees in that respective direction. This allows the player to turn the character in any direction in-game, without needing to move their physical body around. 
