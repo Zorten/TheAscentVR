@@ -51,3 +51,11 @@ When the player reaches the exit gate after having collected all the keys, the e
 ## Implementation
 
 The game uses a few scripts and functions to manage the lighting (World light, wall lights, and flashlight), objects (player, keys, and text), audio, and game status (restart, endgame, and quit).
+
+### Scripts 
+
+- **GameManager:** In the start function of the game manager script, it initializes the text on the player’s hand to show that they have collected 0 keys out of 3 (or however many are needed to open the gate).
+	- While in the _update_ function it checks to see if the player has pressed any of the keys to close the game. If so, it closes the game.
+ 	- The _incKeysCollected_ function is a public function that increments the number of keys collected, updates the keys collected text, and when enough keys are collected sets a flag to true. 
+ 
+
