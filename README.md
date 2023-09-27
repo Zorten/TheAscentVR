@@ -10,7 +10,9 @@
 
 The game begins with you on one end of the maze, and with some instructions written on a wall straight ahead from you.
 
-Figure 1: Game instructions
+#### Figure 1: Game instructions
+![pika-1689977584861-1x](https://github.com/Zorten/TheAscentVR/blob/main/Images/Fig1.png)
+https://github.com/Zorten/TheAscentVR/blob/main/Images/Fig1.png
 
 The flashlight can be toggled on and off, and each time a clicking sound plays. The first time the player turns on the flashlight, the whisper mentioned in the Introduction is triggered. 
 As soon as the game starts, the player is able to inspect their left hand, which has information about how many keys the player has collected in order to escape. The count is updated as the player traverses the game and picks up more keys. If the player restarts the game, the key count is obviously reset as well.
