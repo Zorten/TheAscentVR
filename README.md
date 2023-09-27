@@ -55,7 +55,21 @@ The game uses a few scripts and functions to manage the lighting (World light, w
 ### Scripts 
 
 - **GameManager:** In the start function of the game manager script, it initializes the text on the player’s hand to show that they have collected 0 keys out of 3 (or however many are needed to open the gate).
-	- While in the _update_ function it checks to see if the player has pressed any of the keys to close the game. If so, it closes the game.
- 	- The _incKeysCollected_ function is a public function that increments the number of keys collected, updates the keys collected text, and when enough keys are collected sets a flag to true. 
+	- The _Update_ function continuously checks to see if the player has pressed any of the keys to close the game. If so, it closes the game.
+ 	- The _incKeysCollected_ function is a public function that increments the number of keys collected, updates the keys collected text, and when enough keys are collected sets a flag to true.
+ 
+  - **EndGame:** The script is attached to the exit gate and is mainly used to handle restarts and endgame scenarios.
+	- The _Start_ function gets the audio source for the gate opening as well as ensuring the winning message is not visible. 
+	- The _Update_ function checks to see if the player has collected enough keys or if the restart button has been pressed. If enough keys have been collected, it removes the extra keys from the maze and plays the audio of the gate opening. If the restart button has been pressed, it moves the player back to the start position, ensures that the maze is dark, resets the keys in the maze, turns off the wall lights, and updates the keys collected and the keys collected text to 0.
+	- Since the script is attached to the gate the _OnTriggerEnter_ function runs when the player collides with the gate. If the player has enough keys, it once again plays the gate opening audio, lights up the maze, and shows the endgame text.
+ 
+  - **KeyManager:** The script is attached to each key object. It has only one function, _OnTriggerEnter_, which runs when the player collides with a key, increments the keys collected, and removes that key object from the maze.
+ 
+  - **LightColliders:** This script is attached to each wall light object. In its start function, it makes sure that each wall light is off. 
+	- In the _OnTriggerEnter_ function, when a player “collides” (enters its box collider) it turns on the wall light.
+ 
+  - **FlashlightToggle:** This script is attached to the flashlight object the player is holding. The _Start_ function initializes the flashlight to be off and gets an audio source.
+	- The _Update_ function checks to see if the flashlight toggle button has been pressed. If so, it plays the click audio clip and toggles the flashlight to on or off. If it is the first time that it is being pressed, it plays the whisper audio clip.
+
  
 
