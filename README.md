@@ -1,5 +1,5 @@
 # The Ascent VR
-##### Authors: Zergio Ruvalcaba, Salvador Sanchez, Rishab Dudhia
+##### Authors: Zergio Ruvalcaba (@Zorten), Salvador Sanchez (@salsan1128), Rishab Dudhia (@rishabdudhia)
 
 ## Introduction
   _The Ascent_ is a virtual reality horror video game. At the start of the game, the player is dropped at the beginning of a dark maze in front of a wall with instructions to complete the game. A flashlight is connected to the player’s hand and they must turn it on to help them see their surroundings and navigate his or her escape. Throughout the maze, there are point lights that are initially turned off to force the user to explore the maze, and once a light is passed, it is turned on to let the player know that they have been there before. The lights also have a color scheme of blue to white to red with blue representing moving away from the start of the maze to red representing the player nearing the end. While traversing the maze, the player must also collect 3 out of the 6 glowing keys placed randomly throughout the maze to unlock the exit gate. If the exit is reached before collecting 3 keys, the door will stay locked and the player is still stuck inside until they acquire 3 keys. 
