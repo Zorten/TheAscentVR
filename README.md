@@ -2,7 +2,7 @@
 ##### Authors: Zergio Ruvalcaba (@Zorten), Salvador Sanchez (@salsan1128), Rishab Dudhia (@rishabdudhia)
 
 ## Video Demo
-[![Watch TheAscent video](https://img.youtube.com/vi/-PP-TMt_g_8?si=Kh1_cnOYN39JxFsy/hqdefault.jpg)](https://youtu.be/-PP-TMt_g_8?si=Kh1_cnOYN39JxFsy)
+[![Watch TheAscent video](https://img.youtube.com/vi/-PP-TMt_g_8?si=Kh1_cnOYN39JxFsy/default.jpg)](https://youtu.be/-PP-TMt_g_8?si=Kh1_cnOYN39JxFsy)
 
 
 ## Introduction
