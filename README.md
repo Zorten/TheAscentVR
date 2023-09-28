@@ -74,32 +74,32 @@ The game uses a few scripts and functions to manage the lighting (World light, w
 
 ## Open-Source Code/Assets Used 
 
-#### Existing open source code
+#### Existing open-source code
 
-- **OVR plugin:** This was used in the same manner as previous labs.
+- **OVR plugin:** This was used to implement the Oculus capabilities.
 
-- **FlashlightToggle:** Came with the Rusty Flashlight asset, to help implement a toggle on and off for the flashlight model. However, we did slightly modify it to be able to work the way we intend it to.
+- **FlashlightToggle:** Came with the Rusty Flashlight asset, to help implement a toggle on and off for the flashlight model. However, we did slightly modify it to be able to work the way we intended it to.
 
 
 #### Free Assets
  
-- MDP 4K Texture Pack Vol.1 by Adventure Forge
+- [MDP 4K Texture Pack Vol.1](https://assetstore.unity.com/packages/2d/textures-materials/stone/mdp-4k-texture-pack-vol-1-139525) by [Adventure Forge](https://assetstore.unity.com/publishers/12038)
 	- Used the textures in this pack for the maze walls, the floor, and the ceiling.
-- Rusty Flashlight by Brittany Bolick 
+- [Rusty Flashlight](https://assetstore.unity.com/packages/3d/props/tools/rusty-flashlight-122403) by [Brittany Bolick](https://assetstore.unity.com/publishers/36806) 
 	- Used as the model for the player’s flashlight.
-- Dwarven Expedition Pack - Stylized Assets by Tobyfredson
+- [Dwarven Expedition Pack - Stylized Assets](https://assetstore.unity.com/packages/3d/environments/dungeons/dwarven-expedition-pack-stylized-assets-155149) by [Tobyfredson](https://assetstore.unity.com/publishers/11721)
 	- Used the DungeonGate model as the exit gate for the maze.
-- Rust Key by Aleksn09
+- [Rust Key](https://assetstore.unity.com/packages/3d/props/rust-key-167590) by [Aleksn09](https://assetstore.unity.com/publishers/39424)
 	- Used as the model for the keys to open the gate.
-- Help Me by GGBotNet
+- [Help Me](https://www.dafont.com/help-me.font) by [GGBotNet](https://www.dafont.com/ggbot.d8252)
 	- Used as the font for all of the text in the maze.
-- Horror Ambient by mr45
+- [Horror Ambient](https://pixabay.com/sound-effects/horror-ambient-14590/) by mr45
 	- Used as the ambiance music throughout the game.
-- Flashlight Switch by Kinoton
+- [Flashlight Switch](https://pixabay.com/sound-effects/flashlight-switch-102792/) by Kinoton
 	- Used for the flashlight toggle audio.
-- Creaking Wood by Breviceps
+- [Creaking Wood](https://pixabay.com/sound-effects/creaking-wood-46095/) by Breviceps
 	- Used for the gate opening audio, when all keys are collected and the exit is reached.
-- come back alive whisper by LadyImperatrix
+- [come back alive whisper](https://pixabay.com/sound-effects/come-back-alive-whisper-6299/) by LadyImperatrix
 	- Used for the first time the flashlight is toggled on.
  
 ## Lessons Learned
@@ -110,10 +110,10 @@ One of the most time-consuming aspects of this project was creating the maze. We
 Another problem we ran into was making it so the maze would be completely dark. Initially, we simply changed the skybox into a solid dark color. This worked at the beginning, however at the end of the game when the maze is supposed to light up, when we turned the skybox into a light color, only the outside of the maze we constructed would light up, meaning everything but the area we wanted to illuminate would light up. We fixed this by using a dark cubemap on top of the dark skybox, and when we wanted to light up the world we changed the rendering to use a light skybox and light cubemap.
 
 
-Another substantial problem we ran into was actually finishing the game. Even as we played it, we would get constantly lost and found it extremely difficult to find the exit without help. Because of this, we cut the size of the maze almost by half, and streamlined the paths the user could take a bit more. This improved the difficulty of the game, however it would still take a while to find the exit and it could be a bit boring since you were just walking around. To remediate this, we added the keys to the game as a necessary collectible. This made it so the player had a goal besides just walking around and finding an exit, which made the game way more engaging. This made the game more enjoyable, yet it was still easy to get lost. To fix this problem, we decided to add the “hot and cold” colored light system, in order to help guide the player towards the exit. This made the game actually playable within a reasonable amount of time, and also more aesthetically appealing since the colored lights added a nice glow to the dark maze.
+Another substantial problem we ran into was actually finishing the game. Even as we played it, we would get constantly lost and found it extremely difficult to find the exit without help. Because of this, we cut the size of the maze almost by half and streamlined the paths the user could take a bit more. This improved the difficulty of the game, however, it would still take a while to find the exit and it could be a bit boring since you were just walking around. To remediate this, we added the keys to the game as a necessary collectible. This made it so the player had a goal besides just walking around and finding an exit, which made the game way more engaging. This made the game more enjoyable, yet it was still easy to get lost. To fix this problem, we decided to add the “hot and cold” colored light system, in order to help guide the player towards the exit. This made the game actually playable within a reasonable amount of time, and also more aesthetically appealing since the colored lights added a nice glow to the dark maze.
 
 
-Users of the game found it quite interesting and immersive as they were scared about jump scares that could potentially pop out of the darkness. Even though we did include any, that would have been a nice addition to our game. During our testing stage we did get reviews from other users that the maze was difficult to navigate before we added the light system as a way to track what areas of the maze had been explored. After the light system was added, there were much better responses as the time taken to finish the maze dropped significantly and users stopped losing interest in the game. One last improvement suggested during our demo was that it would have been cool if there was a timer or a monster chasing the user making them feel even more pressured to finish the maze. 
+Users of the game found it quite interesting and immersive as they were scared about jump scares that could potentially pop out of the darkness. Even though we did include any, that would have been a nice addition to our game. During our testing stage, we did get reviews from other users that the maze was difficult to navigate before we added the light system as a way to track what areas of the maze had been explored. After the light system was added, there were much better responses as the time taken to finish the maze dropped significantly and users stopped losing interest in the game. One last improvement suggested during our demo was that it would have been cool if there was a timer or a monster chasing the user making them feel even more pressured to finish the maze. 
 	
  
-For distributing the workload, we each sat together at the lab computer on lab days and some Fridays when lab office-hours were held. One person would be at the keyboard and mouse controlling what we wanted to do in Unity, while we all talked through problems and possible solutions. There were not many times when someone had to shoulder work by themselves and even if one of us could not be present in person we would get on a zoom call to confer about problems we were having. Therefore, there is not one thing that one person did, however it was more like all three of us did everything from scripting to creating the layout of the maze as we talked in real time about decisions to be made. After deciding, we implemented and tested with one person wearing the VR headset and entering the game while the two others troubleshot from the console output and seeing the world view and tracking the player inside of the game for any adjustments that needed to be made.
+For distributing the workload, we each sat together at the lab computer on lab days and some Fridays when lab office hours were held. One person would be at the keyboard and mouse controlling what we wanted to do in Unity, while we all talked through problems and possible solutions. There were not many times when someone had to shoulder work by themselves and even if one of us could not be present in person we would get on a Zoom call to confer about problems we were having. Therefore, there is not one thing that one person did, however, it was more like all three of us did everything from scripting to creating the layout of the maze as we talked in real time about decisions to be made. After deciding, we implemented and tested with one person wearing the VR headset and entering the game while the two others troubleshot from the console output seeing the world view and tracking the player inside of the game for any adjustments that needed to be made.
